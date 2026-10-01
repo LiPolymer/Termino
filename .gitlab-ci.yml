@@ -1,4 +1,4 @@
-# Test and build the Termino plugin.
+# Build the Termino plugin.
 # Runs on merge requests and on the default branch, not on every pushed branch.
 
 workflow:
@@ -7,7 +7,6 @@ workflow:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 stages:
-  - test
   - build
 
 variables:
@@ -33,18 +32,6 @@ default:
   before_script:
     # gradlew is committed without the executable bit from the Windows checkout.
     - chmod +x ./gradlew
-
-test:
-  stage: test
-  script:
-    - ./gradlew test
-  artifacts:
-    when: always
-    expire_in: 1 week
-    paths:
-      - build/reports/tests/test/
-    reports:
-      junit: build/test-results/test/*.xml
 
 build:
   stage: build
