@@ -1,0 +1,56 @@
+# Test and build the Termino plugin.
+# Runs on merge requests and on the default branch, not on every pushed branch.
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+stages:
+  - test
+  - build
+
+variables:
+  # Keep the Gradle home inside the project directory: GitLab caches only project-relative paths.
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle-user-home"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=UTF-8"
+
+default:
+  # The build compiles against an Adoptium JDK 21 toolchain, so ship the same major version.
+  image: eclipse-temurin:21-jdk
+  interruptible: true
+  cache:
+    key:
+      # GitLab allows at most two files here; these two carry the platform and dependency versions.
+      files:
+        - build.gradle.kts
+        - gradle/libs.versions.toml
+    paths:
+      - .gradle-user-home/caches
+      - .gradle-user-home/wrapper
+      # Downloaded IntelliJ Platform artifacts; the largest part of the cache.
+      - .intellijPlatform
+  before_script:
+    # gradlew is committed without the executable bit from the Windows checkout.
+    - chmod +x ./gradlew
+
+test:
+  stage: test
+  script:
+    - ./gradlew test
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - build/reports/tests/test/
+    reports:
+      junit: build/test-results/test/*.xml
+
+build:
+  stage: build
+  script:
+    - ./gradlew buildPlugin
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - build/distributions/*.zip
