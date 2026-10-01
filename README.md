@@ -1,5 +1,10 @@
 # Termino
 
+> [!CAUTION]
+> <img src="https://lipoly.ink/assets/badges/llmWarn.svg" alt="This project contains unaudited AI generated code" width="200">
+>
+> 该项目暂为本人自用, 代码审查不完善, 不保证功能一切正常
+
 IntelliJ Platform 编辑器内终端插件。IDE 主工具栏右侧提供一个按钮，每次点击都会在编辑器区域新增独立的终端标签页。
 
 关闭标签页会结束对应的终端会话。把标签拖到其他编辑器窗口或分屏时，IDE 会先关闭再在同一文件上重建编辑器，此时终端会话保持运行，可在新窗口中继续使用。编辑器内使用 IntelliJ IDEA 2026.2 的 Reworked Terminal 组件；终端虚拟文件不会落盘。
